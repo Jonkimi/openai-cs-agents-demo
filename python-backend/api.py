@@ -24,7 +24,29 @@ from agents import (
     ToolCallOutputItem,
     InputGuardrailTripwireTriggered,
     Handoff,
+    set_default_openai_api,
+    set_default_openai_client,
+    set_tracing_disabled,
 )
+from openai import AsyncOpenAI
+import os
+BASE_URL = os.getenv("OPENAI_API_BASE") or ""
+API_KEY = os.getenv("OPENAI_API_KEY") or ""
+MODEL_NAME = os.getenv("OPENAI_MODEL_NAME") or "GPT-4o"
+
+if not BASE_URL or not API_KEY or not MODEL_NAME:
+    raise ValueError(
+        "Please set OPENAI_BASE_URL, OPENAI_API_KEY, OPENAI_MODEL_NAME via env var or code."
+    )
+
+client = AsyncOpenAI(
+    base_url=BASE_URL,
+    api_key=API_KEY,
+)
+set_default_openai_client(client=client, use_for_tracing=False)
+set_default_openai_api("chat_completions")
+set_tracing_disabled(disabled=True)
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
